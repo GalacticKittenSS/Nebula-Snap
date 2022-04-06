@@ -1,6 +1,7 @@
 import os
 import subprocess
 import platform
+import Utils
 
 from SetupPython import PythonConfiguration as PythonReq 
 
@@ -16,6 +17,8 @@ VulkanReq.Validate()
 
 print("\nUpdating submodules...")
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
+
+print("\nUnzipping Module Libraries...")
 Utils.UnzipFile("./Nebula/Modules/libs.zip", deleteZipFile=False)
 
 if (premakeInstalled):
