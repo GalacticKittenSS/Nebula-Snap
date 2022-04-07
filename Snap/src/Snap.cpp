@@ -7,7 +7,7 @@
 
 using namespace Nebula;
 
-mat4 BackgroundMatrix = scale(vec3(32.0f, 18.0f, 1.0f));
+mat4 BackgroundMatrix = scale(vec3(32.0f, 18.0f, 1.0f)) * translate(vec3(0.0f, 0.0f, 0.0f));
 mat4 PressToPlayMatrix = scale(vec3(20.46f, 1.78f, 1.0f)) * translate(vec3(0.0f, 0.0f, 0.01f));
 mat4 PressToSkipMatrix = scale(vec3(8.02f, 0.91f, 1.0f)) * translate(vec3(0.0f, -7.5f, 0.01f));
 mat4 YouDiedMatrix = scale(vec3(15.8f, 2.8f, 1.0f)) * translate(vec3(0.0f, 1.5f, 0.01f));
@@ -44,7 +44,8 @@ void Snap::Attach() {
 
 	Data.RoundedCube = Texture2D::Create("Resources/textures/rounded.png");
 	Data.Background = Texture2D::Create("Resources/textures/background.png");
-	
+	Data.Cloud = Texture2D::Create("Resources/textures/cloud.png");
+
 	Data.HeartFull = Texture2D::Create("Resources/textures/heart_full.png");
 	Data.HeartEmpty = Texture2D::Create("Resources/textures/heart_empty.png");
 	
@@ -55,9 +56,12 @@ void Snap::Attach() {
 	Data.FoundNull = Texture2D::Create("Resources/textures/found_null.png");
 	Data.FoundFalse = Texture2D::Create("Resources/textures/found_false.png");
 	Data.FoundTrue = Texture2D::Create("Resources/textures/found_true.png");
-	
+
 	OnWindowResize(WindowResizeEvent(1600, 900));
 	Reset();
+
+	for (uint32_t i = 0; i < 10; i++)
+		Clouds.push_back({ i * 5.0f - camProjection.x, (float)Rand(0.0f, camProjection.y * 2.0f) - camProjection.y });
 
 	GamePhase = Phase::Stopped;
 }
@@ -198,7 +202,10 @@ bool Snap::OnWindowResize(WindowResizeEvent& e) {
 	
 	if (e.GetHeight() < MAP_HEIGHT * windowToLocalScale.value.y)
 		windowToLocalScale.value = vec2(e.GetHeight() / MAP_HEIGHT);
-	
+
+	for (vec2& c : Clouds)
+		c.x /= camProjection.x;
+
 	float hWidth = e.GetWidth() / windowToLocalScale.value.x / 2.0f;
 	float hHeight = e.GetHeight() / windowToLocalScale.value.y / 2.0f;
 	SceneCam.SetProjection(-hWidth, hWidth, -hHeight, hHeight);
@@ -213,6 +220,8 @@ bool Snap::OnWindowResize(WindowResizeEvent& e) {
 	Data.FoundSize = { 1.5f, 1.5f };
 	Data.FoundStartPos = position - vec2((chances.original - 0.5f) * Data.FoundSize.x, Data.FoundSize.y / 2.0f);
 
+	for (vec2& c : Clouds)
+		c.x *= camProjection.x;
 	return true;
 }
 
@@ -379,6 +388,16 @@ void Snap::Update(Timestep ts) {
 	if (Lives <= 0)
 		GamePhase = Phase::Stopped;
 
+	if (ts < 2.0f) {
+		for (vec2& c : Clouds) {
+			c.x -= ts;
+			if (c.x + 2.5f < -camProjection.x) {
+				c.x = camProjection.x + 2.5f;
+				c.y = Rand(0.0f, camProjection.y * 2.0f) - camProjection.y;
+			}
+		}
+	}
+
 	bool hasTilesMoved = false;
 	for (Tile& tile : Tiles) {
 		if (tile.Animation.hasPositionAnimation) {
@@ -498,23 +517,23 @@ void Snap::Render() {
 	if (GamePhase != Phase::Stopped) {
 		for (Tile& tile : Tiles) {
 			if (tile.isPopped && !tile.isTempShown) continue;
-
+	
 			vec4 colour(0.4f, 0.4f, 0.4f, 1.0f);
 			if (tile.isShown)
 				colour = Data.Textures[tile.textureIndex];
-
+	
 			Renderer2D::Draw(NB_QUAD, tile, colour);
 		}
-
+	
 		if (GamePhase != Phase::Match) {
 			Renderer2D::Draw(NB_QUAD, translate(vec3(Tiles[ConvertToIndex(selectedTile, MAP_WIDTH)].Position)) * scale(vec3(1.1f, 1.1f, 1.0f)),
 				vec4(0.83f, 0.68f, 0.21f, 1.0f));
-
+	
 			Renderer2D::Draw(NB_QUAD, translate(vec3(Tiles[ConvertToIndex(hoveredTile, MAP_WIDTH)].Position)) * scale(vec3(1.1f, 1.1f, 1.0f)),
 				vec4(0.83f, 0.68f, 0.21f, 0.5f));
 		}
 	}
-
+	
 	if (GamePhase == Phase::Move && !isSelected) {
 		Array<vec2> Positions = {
 			{ selectedTile.x, selectedTile.y + 1 },
@@ -522,28 +541,33 @@ void Snap::Render() {
 			{ selectedTile.x + 1, selectedTile.y },
 			{ selectedTile.x - 1, selectedTile.y }
 		};
-
+	
 		for (vec2& pos : Positions) {
 			if (pos.x < 0.0f || pos.x > MAP_WIDTH - 1.0f) continue;
 			if (pos.y < 0.0f || pos.y > MAP_HEIGHT - 1.0f) continue;
-
+	
 			Renderer2D::Draw(NB_QUAD, translate(vec3(Tiles[ConvertToIndex(pos, MAP_WIDTH)].TilePosition)) * scale(vec3(1.1f, 1.1f, 1.0f)),
 				vec4(1.0f, 1.0f, 1.0f, 0.75f));
 		}
 	}
-
+	
 	Renderer2D::Draw(NB_QUAD, BackgroundMatrix, vec4(1.0f), Data.Background);
+
+	for (vec2& c : Clouds)
+		Renderer2D::Draw(NB_QUAD, translate(vec3(c, 0.001f)) * scale(vec3(2.5f, 1.0f, 1.0f)), vec4(1.0f), Data.Cloud);
+
 	Renderer2D::EndScene();
 
 	Renderer2D::BeginScene(SceneCam, SceneCam.GetViewMatrix());
+
 	for (uint32_t i = 0; i < Lives.original; i++) {
 		Ref<Texture2D> texture = Data.HeartFull;
 		if (i + 1 > Lives.value)
 			texture = Data.HeartEmpty;
-
+	
 		Renderer2D::Draw(NB_QUAD, translate(vec3(Data.HeartStartPos.x + i * Data.HeartSize.x, Data.HeartStartPos.y, 1.0f)) * scale(vec3(Data.HeartSize, 1.0f)), vec4(1.0f), texture);
 	}
-
+	
 	for (uint32_t i = 0; i < chances.original; i++) {
 		Ref<Texture2D> texture = Data.FoundNull;
 		if (i < rounds.size()) {
@@ -552,19 +576,18 @@ void Snap::Render() {
 			else
 				texture = Data.FoundFalse;
 		}
-
+	
 		Renderer2D::Draw(NB_QUAD, translate(vec3(Data.FoundStartPos.x + i * Data.FoundSize.x, Data.FoundStartPos.y, 1.0f)) * scale(vec3(Data.FoundSize, 1.0f)), vec4(1.0f), texture);
 	}
-
+	
 	if (GamePhase == Phase::Stopped) {
 		Renderer2D::Draw(NB_QUAD, PressToPlayMatrix, vec4(1.0f), Data.PressToPlay);
 		if (Lives.value <= 0.0f)
 			Renderer2D::Draw(NB_QUAD, YouDiedMatrix, vec4(1.0f), Data.YouDied);
-	}
-	else {
-		if (GamePhase == Phase::Move) {
+	} else {
+		if (GamePhase == Phase::Move)
 			Renderer2D::Draw(NB_QUAD, PressToSkipMatrix, vec4(1.0f), Data.PressToSkip);
-		}
 	}
+
 	Renderer2D::EndScene();
 }

@@ -1,6 +1,6 @@
 # Nebula Snap
 
-Flappy Nebula is a simplified copy of Flappy Bird created in the Nebula Engine. The project serves the purpose of showcasing the Nebula Engine in a simple example.
+Nebula Snap is a Custom Game based around Snap created in the Nebula Engine. The project serves the purpose of showcasing the Nebula Engine in a simple example.
 
 The Example uses Nebula on commit [781aefc](https://github.com/GalacticKittenSS/Nebula/tree/781aefcf89fac1e124f46cda24c40799ef0bcaec)
 

@@ -49,7 +49,7 @@ struct Tile {
 		Position(pos), Size(size), textureIndex(index), isShown(shown), TilePosition(pos) { }
 
 	Nebula::mat4 GetTransform() const {
-		return Nebula::translate(Nebula::vec3(Position, 0.0f)) * Nebula::scale(Nebula::vec3(Size, 1.0f)) * Nebula::rotate(Rotation, { 0.0f, 0.0f, 1.0f });
+		return Nebula::translate(Nebula::vec3(Position, 0.1f)) * Nebula::scale(Nebula::vec3(Size, 1.0f)) * Nebula::rotate(Rotation, { 0.0f, 0.0f, 1.0f });
 	}
 
 	operator Nebula::mat4() const { return GetTransform(); }
@@ -77,4 +77,6 @@ struct TileData {
 	
 	Nebula::vec2 FoundSize;
 	Nebula::vec2 FoundStartPos;
+
+	Nebula::Ref<Nebula::Texture2D> Cloud;
 };

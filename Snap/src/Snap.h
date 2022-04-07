@@ -37,6 +37,8 @@ private:
 	Nebula::vec2 selectedTile;
 	Nebula::vec2 hoveredTile;
 
+	Nebula::Array<Nebula::vec2> Clouds;
+
 	float Score = 0.0f;
 	Resetable<uint32_t> Lives = 3.0f;
 
