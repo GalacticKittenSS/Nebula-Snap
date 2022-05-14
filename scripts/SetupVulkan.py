@@ -10,7 +10,7 @@ from urllib.request import urlopen
 
 class VulkanConfiguration:
     requiredVulkanVersion = "1.2.170.0"
-    vulkanDirectory = "./Nebula/Modules/VulkanSDK"
+    vulkanDirectory = "./Nebula/Nebula/Modules/VulkanSDK"
 
     @classmethod
     def Validate(cls):

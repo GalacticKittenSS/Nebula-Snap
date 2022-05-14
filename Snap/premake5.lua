@@ -15,13 +15,15 @@ project "Snap"
 	}
 
 	includedirs {
-		"%{wks.location}/Nebula/include",
+		"%{includedir.Nebula}",
+		"%{includedir.Spdlog}",
 		"%{includedir.Entt}",
-		"%{includedir.ImGui}",
-		"%{includedir.Spdlog}"
+		"%{includedir.ImGui}"
 	}
 
-	libdirs { "%{wks.location}/Nebula/Modules" }
+	links {
+		"Nebula"
+	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -35,30 +37,12 @@ project "Snap"
 			"{COPYDIR} \"%{LibraryDir.VulkanSDK_DebugDLL}\" \"%{cfg.targetdir}\""
 		}
 
-		links {
-			"Nebula_Debug.lib",
-			"GLFW_Debug.lib",
-			"GLad_Debug.lib"
-		}	
-
 	filter "configurations:Release"
 		defines "NB_DEBUG"
 		runtime "Release"
 		optimize "on"
 
-		links {
-			"Nebula.lib",
-			"GLFW.lib",
-			"GLad.lib"
-		}	
-
 	filter "configurations:Dist"
 		defines "NB_DIST"
 		runtime "Release"
 		optimize "on"
-
-		links {
-			"Nebula.lib",
-			"GLFW.lib",
-			"GLad.lib"
-		}	

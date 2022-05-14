@@ -1,7 +1,6 @@
 import os
 import subprocess
 import platform
-import Utils
 
 from SetupPython import PythonConfiguration as PythonReq 
 
@@ -18,13 +17,10 @@ VulkanReq.Validate()
 print("\nUpdating submodules...")
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
-print("\nUnzipping Module Libraries...")
-Utils.UnzipFile("./Nebula/Modules/libs.zip", deleteZipFile=False)
-
 if (premakeInstalled):
     if platform.system() == "Windows":
         print("\nRunning premake...")
-        subprocess.call([os.path.abspath("./scripts/Win-GenProjects.bat"), "nopause"])
+        subprocess.call([os.path.abspath("./scripts/Win-GenProjects - vs2022.bat"), "nopause"])
 
     print("\nSetup completed!")
 else:

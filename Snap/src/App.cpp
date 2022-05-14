@@ -3,16 +3,16 @@
 
 #include "Snap.h"
 
+class GenericApp : public Nebula::Application {
+public:
+	GenericApp(Nebula::ApplicationCommandLineArgs args): Application("Snap", args) {
+		PushLayer(new Snap());
+	}
+
+	~GenericApp() { }
+};
+
 namespace Nebula {
-	class GenericApp : public Application {
-	public:
-		GenericApp(ApplicationCommandLineArgs args): Application("Snap", args) {
-			PushLayer(new Snap());
-		}
-
-		~GenericApp() { }
-	};
-
 	Application* CreateApplication(ApplicationCommandLineArgs args) {
 		return new GenericApp(args);
 	}

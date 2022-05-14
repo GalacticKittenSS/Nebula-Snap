@@ -49,6 +49,7 @@ void Snap::Attach() {
 	Data.HeartFull = Texture2D::Create("Resources/textures/heart_full.png");
 	Data.HeartEmpty = Texture2D::Create("Resources/textures/heart_empty.png");
 	
+	
 	Data.PressToPlay = Texture2D::Create("Resources/textures/press_to_play.png");
 	Data.PressToSkip = Texture2D::Create("Resources/textures/press_to_skip.png");
 	Data.YouDied = Texture2D::Create("Resources/textures/you_died.png");
@@ -57,6 +58,12 @@ void Snap::Attach() {
 	Data.FoundFalse = Texture2D::Create("Resources/textures/found_false.png");
 	Data.FoundTrue = Texture2D::Create("Resources/textures/found_true.png");
 
+	Data.HeartFull->SetFilterNearest(true);
+	Data.HeartEmpty->SetFilterNearest(true);
+	Data.FoundNull->SetFilterNearest(true);
+	Data.FoundFalse->SetFilterNearest(true);
+	Data.FoundTrue->SetFilterNearest(true);
+	
 	OnWindowResize(WindowResizeEvent(1600, 900));
 	Reset();
 
