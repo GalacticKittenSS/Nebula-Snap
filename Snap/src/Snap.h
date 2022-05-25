@@ -9,7 +9,7 @@ public:
 	~Snap() { }
 
 	void Attach() override;
-	void Detach() override { }
+	void Detach() override;
 
 	void OnEvent(Nebula::Event& e) override;
 

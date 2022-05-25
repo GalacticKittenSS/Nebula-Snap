@@ -7,10 +7,10 @@
 
 using namespace Nebula;
 
-mat4 BackgroundMatrix = scale(vec3(32.0f, 18.0f, 1.0f)) * translate(vec3(0.0f, 0.0f, 0.0f));
-mat4 PressToPlayMatrix = scale(vec3(20.46f, 1.78f, 1.0f)) * translate(vec3(0.0f, 0.0f, 0.01f));
-mat4 PressToSkipMatrix = scale(vec3(8.02f, 0.91f, 1.0f)) * translate(vec3(0.0f, -7.5f, 0.01f));
-mat4 YouDiedMatrix = scale(vec3(15.8f, 2.8f, 1.0f)) * translate(vec3(0.0f, 1.5f, 0.01f));
+static mat4 BackgroundMatrix = scale(vec3(32.0f, 18.0f, 1.0f)) * translate(vec3(0.0f, 0.0f, 0.0f));
+static mat4 PressToPlayMatrix = scale(vec3(1.5f)) * translate(vec3(-5.0f, 0.0f, 0.01f));
+static mat4 PressToSkipMatrix = translate(vec3(-4.5f, -7.0f, 0.01f));
+static mat4 YouDiedMatrix = scale(vec3(2.0f)) * translate(vec3(-2.0f, 1.5f, 0.01f));
 
 static uint32_t ConvertToIndex(vec2 position, uint32_t width) {
 	return position.x + position.y * width;
@@ -49,14 +49,11 @@ void Snap::Attach() {
 	Data.HeartFull = Texture2D::Create("Resources/textures/heart_full.png");
 	Data.HeartEmpty = Texture2D::Create("Resources/textures/heart_empty.png");
 	
-	
-	Data.PressToPlay = Texture2D::Create("Resources/textures/press_to_play.png");
-	Data.PressToSkip = Texture2D::Create("Resources/textures/press_to_skip.png");
-	Data.YouDied = Texture2D::Create("Resources/textures/you_died.png");
-
 	Data.FoundNull = Texture2D::Create("Resources/textures/found_null.png");
 	Data.FoundFalse = Texture2D::Create("Resources/textures/found_false.png");
 	Data.FoundTrue = Texture2D::Create("Resources/textures/found_true.png");
+
+	FontManager::Add(new Font("Roboto", "Resources/fonts/Roboto/Regular.ttf", 86.0f));
 
 	Data.HeartFull->SetFilterNearest(true);
 	Data.HeartEmpty->SetFilterNearest(true);
@@ -71,6 +68,10 @@ void Snap::Attach() {
 		Clouds.push_back({ i * 5.0f - camProjection.x, (float)Rand(0.0f, camProjection.y * 2.0f) - camProjection.y });
 
 	GamePhase = Phase::Stopped;
+}
+
+void Snap::Detach() {
+	FontManager::Clean();
 }
 
 void Snap::Reset() {
@@ -588,12 +589,12 @@ void Snap::Render() {
 	}
 	
 	if (GamePhase == Phase::Stopped) {
-		Renderer2D::Draw(NB_QUAD, PressToPlayMatrix, vec4(1.0f), Data.PressToPlay);
+		Renderer2D::DrawString("Press Any Button to Play", FontManager::Get("Roboto"), PressToPlayMatrix, { 0.0f, 0.0f, 0.0f, 1.0f });
 		if (Lives.value <= 0.0f)
-			Renderer2D::Draw(NB_QUAD, YouDiedMatrix, vec4(1.0f), Data.YouDied);
+			Renderer2D::DrawString("You Died!", FontManager::Get("Roboto"), YouDiedMatrix, { 0.0f, 0.0f, 0.0f, 1.0f });
 	} else {
 		if (GamePhase == Phase::Move)
-			Renderer2D::Draw(NB_QUAD, PressToSkipMatrix, vec4(1.0f), Data.PressToSkip);
+			Renderer2D::DrawString("Press Space to Skip", FontManager::Get("Roboto"), PressToSkipMatrix, { 0.0f, 0.0f, 0.0f, 1.0f });
 	}
 
 	Renderer2D::EndScene();

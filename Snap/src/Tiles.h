@@ -67,10 +67,6 @@ struct TileData {
 	Nebula::vec2 HeartSize;
 	Nebula::vec2 HeartStartPos;
 	
-	Nebula::Ref<Nebula::Texture2D> PressToPlay;
-	Nebula::Ref<Nebula::Texture2D> PressToSkip;
-	Nebula::Ref<Nebula::Texture2D> YouDied;
-	
 	Nebula::Ref<Nebula::Texture2D> FoundNull;
 	Nebula::Ref<Nebula::Texture2D> FoundFalse;
 	Nebula::Ref<Nebula::Texture2D> FoundTrue;
